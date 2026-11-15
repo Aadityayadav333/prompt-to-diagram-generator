@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}DiagramForge AI - Prompt to diagram{% endblock %}
+{% block page %}home{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}">{% endblock %}
+{% block content %}
+<div id="homeView" class="home">
+  <h1>What do you want to diagram?</h1>
+  <p class="lead">Describe a system, flow or database in plain English. DiagramForge analyses your requirements, picks the right diagram type and generates editable, exportable diagrams.</p>
+
+  <form class="card prompt-card" id="promptForm" novalidate>
+    <label class="sr-only" for="promptInput">Describe your diagram</label>
+    <textarea id="promptInput" maxlength="8000" placeholder="e.g. Create a UML sequence diagram for an e-commerce app where a customer logs in, searches for products, adds them to a cart, pays and receives an order confirmation." required></textarea>
+    <div class="prompt-tools">
+      <div class="left">
+        <label class="sr-only" for="typeSelect">Diagram type</label>
+        <select id="typeSelect"><option value="">✨ Auto-detect type</option></select>
+        <label class="sr-only" for="providerSelect">AI provider</label>
+        <select id="providerSelect" title="AI provider"><option value="gemini">Gemini</option><option value="groq">Groq</option></select>
+        <span class="counter" id="promptCounter">0 / 8000</span>
+      </div>
+      <div class="right">
+        <button class="btn" type="button" id="btnGenerateDocs" title="Generate a coordinated set of diagrams for the whole project">{{ icon('layers') }} Complete documentation</button>
+        <button class="btn primary" type="submit" id="btnGenerate">{{ icon('spark') }} Generate Diagram</button>
+      </div>
+    </div>
+  </form>
+  <div class="detect" id="detectBox" aria-live="polite"><span>Automatic diagram detection: start typing…</span></div>
+  <div class="alert" id="homeError" hidden role="alert"></div>
+  <div class="card progress" id="progressBox" hidden aria-live="polite"><ul id="progressList"></ul><div class="note" id="progressNote" style="color:var(--muted);font-size:13px"></div></div>
+
+  <div class="section-title">Try an example</div>
+  <div class="examples" id="examples"></div>
+
+  <div id="recentSection" hidden>
+    <div class="section-title">Recently generated</div>
+    <div class="grid-cards" id="recentGrid"></div>
+  </div>
+</div>
+{% include "_workspace.html" %}
+{% endblock %}
+{% block scripts %}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="{{ url_for('static', filename='js/highlight.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/flowedit.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/renderer.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/export.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

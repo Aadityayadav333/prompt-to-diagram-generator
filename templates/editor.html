@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Edit diagram - DiagramForge AI{% endblock %}
+{% block page %}editor{% endblock %}
+{% block body_attrs %}data-diagram-id="{{ diagram_id }}"{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}">{% endblock %}
+{% block content %}
+{% set open_by_default = true %}
+{% include "_workspace.html" %}
+{% endblock %}
+{% block scripts %}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="{{ url_for('static', filename='js/highlight.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/flowedit.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/renderer.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/export.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Log in - DiagramForge AI{% endblock %}
+{% block page %}login{% endblock %}
+{% block body_attrs %}data-next="{{ next_url }}"{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <form class="card auth-card" id="authForm" novalidate>
+    <h1>Welcome back</h1>
+    <p style="margin:0;color:var(--muted)">Log in to save projects, keep version history and reopen diagrams anywhere.</p>
+    <div class="alert" id="authError" hidden role="alert"></div>
+    <label class="field">Email<input id="email" type="email" autocomplete="email" required></label>
+    <label class="field">Password<input id="password" type="password" autocomplete="current-password" required></label>
+    <button class="btn primary" type="submit" id="authSubmit">Log in</button>
+    <p style="margin:0;font-size:14px;color:var(--muted)">New here? <a href="/register{% if next_url != '/' %}?next={{ next_url|urlencode }}{% endif %}">Create an account</a> · <a href="/">Continue as guest</a></p>
+  </form>
+</div>
+{% endblock %}

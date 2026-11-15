@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Create account - DiagramForge AI{% endblock %}
+{% block page %}register{% endblock %}
+{% block body_attrs %}data-next="{{ next_url }}"{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <form class="card auth-card" id="authForm" novalidate>
+    <h1>Create your account</h1>
+    <p style="margin:0;color:var(--muted)">Passwords are stored only as salted hashes.</p>
+    <div class="alert" id="authError" hidden role="alert"></div>
+    <label class="field">Username<input id="username" type="text" autocomplete="username" minlength="3" maxlength="32" required></label>
+    <label class="field">Email<input id="email" type="email" autocomplete="email" required></label>
+    <label class="field">Password (8+ characters)<input id="password" type="password" autocomplete="new-password" minlength="8" required></label>
+    <button class="btn primary" type="submit" id="authSubmit">Create account</button>
+    <p style="margin:0;font-size:14px;color:var(--muted)">Already registered? <a href="/login{% if next_url != '/' %}?next={{ next_url|urlencode }}{% endif %}">Log in</a></p>
+  </form>
+</div>
+{% endblock %}

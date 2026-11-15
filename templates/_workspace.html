@@ -1,0 +1,100 @@
+{% from "_icons.html" import icon %}
+<section class="workspace" id="workspace" {% if not open_by_default %}hidden{% endif %} aria-label="Diagram workspace">
+  <div class="ws-toolbar">
+    <button class="icon-btn" type="button" id="btnBack" aria-label="Back to prompt" title="Back">{{ icon('back') }}</button>
+    <input class="ws-title" id="wsTitle" type="text" maxlength="160" aria-label="Diagram title" placeholder="Untitled diagram">
+    <span class="badge" id="wsBadge"></span>
+    <span class="badge ok" id="wsStatus" hidden></span>
+    <div class="ws-spacer"></div>
+    <div class="ws-actions">
+      <button class="btn sm" type="button" id="btnRegenerate" title="Regenerate from the original prompt">{{ icon('refresh') }}<span class="lbl">Regenerate</span></button>
+      <button class="btn sm" type="button" id="btnToggleSource" aria-pressed="false" title="Edit source code">{{ icon('code') }}<span class="lbl">Edit Source</span></button>
+      <button class="btn sm" type="button" id="btnSave" title="Save diagram">{{ icon('save') }}<span class="lbl">Save</span></button>
+      <div class="menu">
+        <button class="btn sm primary" type="button" id="exportMenuBtn" aria-haspopup="true" aria-expanded="false">{{ icon('download') }}<span class="lbl">Export</span></button>
+        <div class="menu-pop card" id="exportMenu" hidden role="menu">
+          <button type="button" role="menuitem" data-export="png">PNG image <small>high-resolution</small></button>
+          <button type="button" role="menuitem" data-export="svg">SVG vector <small>scalable</small></button>
+          <button type="button" role="menuitem" data-export="pdf">PDF document <small>high-res image</small></button>
+          <button type="button" role="menuitem" data-export="source"><span id="exportSourceLabel">Source file</span> <small id="exportSourceExt"></small></button>
+          <div class="menu-row"><label for="exportScale">Image quality</label>
+            <select id="exportScale"><option value="1">1× standard</option><option value="2">2× sharp</option><option value="3" selected>3× high</option><option value="4">4× max</option></select>
+          </div>
+        </div>
+      </div>
+      <button class="icon-btn" type="button" id="btnFullscreen" aria-label="Full screen" title="Full screen">{{ icon('expand') }}</button>
+      <button class="icon-btn" type="button" id="btnToggleInspector" aria-label="Diagram settings" title="Settings">{{ icon('panel') }}</button>
+    </div>
+  </div>
+  <div class="tabs" id="projectTabs" hidden role="tablist" aria-label="Diagrams in this project"></div>
+  <div class="ws-body">
+    <div class="canvas-col">
+      <div class="canvas-wrap" id="canvasWrap" tabindex="0" aria-label="Diagram canvas. Drag to pan, scroll to zoom.">
+        <div class="stage" id="stage"></div>
+        <div class="canvas-msg" id="canvasMsg" hidden><div></div></div>
+        <div class="zoom-controls" id="zoomControls">
+          <button type="button" id="zoomOut" aria-label="Zoom out">{{ icon('zoom-out') }}</button>
+          <span class="zl" id="zoomLabel">100%</span>
+          <button type="button" id="zoomIn" aria-label="Zoom in">{{ icon('zoom-in') }}</button>
+          <button type="button" id="zoomFit" aria-label="Fit to screen" title="Fit to screen">{{ icon('fit') }}</button>
+          <button type="button" id="zoomReset" aria-label="Actual size" title="Actual size (100%)">1:1</button>
+        </div>
+      </div>
+      <div class="source-panel" id="sourcePanel" hidden>
+        <div class="source-bar">
+          <div class="title">Source <span class="badge" id="srcEngine"></span> <span class="badge warn" id="srcDirty" hidden>unsaved edits</span></div>
+          <button class="btn sm" type="button" id="srcCopy">{{ icon('copy') }}<span class="lbl">Copy</span></button>
+          <button class="btn sm" type="button" id="srcReset">{{ icon('undo') }}<span class="lbl">Reset</span></button>
+          <button class="btn sm" type="button" id="srcFix" title="Ask the AI to repair syntax errors">{{ icon('wand') }}<span class="lbl">Auto-fix</span></button>
+          <button class="btn sm primary" type="button" id="srcApply">{{ icon('check') }}<span class="lbl">Apply changes</span></button>
+        </div>
+        <div class="code-editor">
+          <pre id="srcHl" aria-hidden="true"></pre>
+          <textarea id="srcInput" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Diagram source code"></textarea>
+        </div>
+        <div class="src-errors" id="srcErrors" hidden></div>
+      </div>
+    </div>
+    <aside class="inspector" id="inspector" aria-label="Diagram settings">
+      <section>
+        <h3>Diagram</h3>
+        <label class="field">Type<input id="optType" type="text" readonly></label>
+        <label class="field" id="optDirectionWrap">Layout direction
+          <select id="optDirection"><option value="TB">Top → Bottom</option><option value="LR">Left → Right</option><option value="BT">Bottom → Top</option><option value="RL">Right → Left</option></select>
+        </label>
+        <label class="field">Theme
+          <select id="optTheme"></select>
+        </label>
+        <p class="note" id="optNote"></p>
+      </section>
+      <section id="nodeSection" hidden>
+        <h3>Visual editing <span class="badge">flowchart</span></h3>
+        <p class="note">Click a node on the canvas to rename or delete it. Changes rewrite the source and re-render. Layout is automatic (Mermaid has no drag-to-position).</p>
+        <div id="nodeEditor" hidden>
+          <label class="field">Selected node <code id="nodeId"></code>
+            <input id="nodeLabel" type="text" maxlength="120" aria-label="Node label">
+          </label>
+          <div class="row"><button class="btn sm" type="button" id="nodeRename">Rename</button><button class="btn sm danger" type="button" id="nodeDelete">{{ icon('trash') }}Delete</button></div>
+        </div>
+        <label class="field">Add node
+          <div class="row"><input id="addNodeLabel" type="text" maxlength="120" placeholder="Label"><select id="addNodeShape" aria-label="Node shape"><option value="process">Process</option><option value="decision">Decision</option><option value="rounded">Rounded</option><option value="database">Database</option></select></div>
+        </label>
+        <button class="btn sm" type="button" id="addNodeBtn">{{ icon('plus') }}Add node</button>
+        <label class="field">Add connection
+          <div class="row"><select id="edgeFrom" aria-label="From node"></select><select id="edgeTo" aria-label="To node"></select></div>
+          <input id="edgeLabel" type="text" maxlength="80" placeholder="Label (optional)">
+        </label>
+        <button class="btn sm" type="button" id="addEdgeBtn">{{ icon('plus') }}Connect</button>
+      </section>
+      <section id="infoSection" hidden>
+        <h3>About this diagram</h3>
+        <p class="note" id="explanation"></p>
+        <div id="assumptionsBox" hidden><h3>Assumptions</h3><ul id="assumptions"></ul></div>
+      </section>
+      <section id="historySection" hidden>
+        <h3>Version history</h3>
+        <div id="historyList"></div>
+      </section>
+    </aside>
+  </div>
+</section>

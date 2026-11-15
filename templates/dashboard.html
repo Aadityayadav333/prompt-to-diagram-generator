@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}My Projects - DiagramForge AI{% endblock %}
+{% block page %}dashboard{% endblock %}
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div><h1>My Projects</h1><p style="color:var(--muted);margin:4px 0 0">Projects group the diagrams generated for one system. Open a diagram to edit its source or export it.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" type="button" id="btnNewProject">{{ icon('folder') }} New project</button>
+      <a class="btn primary" href="/">{{ icon('plus') }} New diagram</a>
+    </div>
+  </div>
+  <div class="alert" id="dashError" hidden role="alert"></div>
+  <div id="projectsBox"><div class="empty-hint">Loading…</div></div>
+  <div class="section-title">Diagrams without a project</div>
+  <div class="grid-cards" id="looseGrid"></div>
+</div>
+{% endblock %}
